@@ -8,10 +8,10 @@ on:
     branches:
       - main
 
-# env:
-#   IMAGE_NAME: ${{ github.repository }}
-#   ROS_DISTRO: jazzy
-#   BRANCH: ${{ github.ref_name }}
+ env:
+   IMAGE_NAME: ${{ github.repository }}
+   ROS_DISTRO: jazzy
+   BRANCH: ${{ github.ref_name }}
 
 jobs:
   build-and-push-to-docker-hub:
