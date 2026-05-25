@@ -1,41 +1,44 @@
 ---
 name: Publish a Docker image (AMD64; Common X86_64 Linux Machine)
 
-# yamllint disable-line rule:truthy
 on:
   push:
     tags: ["*"]
     branches:
       - main
+  workflow_dispatch:
 
 env:
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: kmjeong000/docker_image
   ROS_DISTRO: jazzy
   BRANCH: ${{ github.ref_name }}
 
 jobs:
   build-and-push-to-docker-hub:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: kmjeong000
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: kmjeong000/docker_image
+          images: ${{ env.IMAGE_NAME }}
           tags: |
             type=ref,event=branch
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
+            type=ref,event=tag
+            type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
